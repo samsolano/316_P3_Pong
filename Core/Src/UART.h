@@ -17,7 +17,7 @@ void UART_print(char *str);
 void UART_print_int(char *string, int16_t value);
 void UART_print_float(char *string, float value);
 
-uint8_t paddle_position = 40;
+uint8_t paddle_position = 37;
 
 void UART_print_float(char *string, float value) {
     char buffer[100];

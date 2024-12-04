@@ -14,7 +14,8 @@ typedef struct {
 void SystemClock_Config(void);
 void Print_Screen(int8_t *x_position, int8_t *y_position);
 void GAME_init(Ball *ball);
-void Check_Collisions(int8_t *dx, int8_t *dy, int8_t *x_position, int8_t *y_position);
+void Check_Screen_Collisions(int8_t *dx, int8_t *dy, int8_t *x_position, int8_t *y_position);
+void Check_Paddle_Collisions(int8_t *dx, int8_t *dy, int8_t *x_position, int8_t *y_position);
 
 
 int main(void)
@@ -29,24 +30,50 @@ int main(void)
 	while (1)
 	{
 		Print_Screen(&(ball.x), &(ball.y));
-		Check_Collisions(&(ball.dx), &(ball.dy), &(ball.x), &(ball.y));
+		Check_Screen_Collisions(&(ball.dx), &(ball.dy), &(ball.x), &(ball.y));
+		Check_Paddle_Collisions(&(ball.dx), &(ball.dy), &(ball.x), &(ball.y));
+
+		if(ball.y >= 24)
+		{
+			UART_print("\033[2J\033[H");
+			for(uint16_t i = 0; i < 900; i++)
+			{
+				UART_print("GAME OVER ");
+			}
+			break;
+		}
 	}
 }
 
 
-void Check_Collisions(int8_t *dx, int8_t *dy, int8_t *x_position, int8_t *y_position)
+void Check_Paddle_Collisions(int8_t *dx, int8_t *dy, int8_t *x_position, int8_t *y_position)
+{
+
+	if((*x_position <= (paddle_position + 3)) && (*x_position >= paddle_position) && (*y_position == 20))
+	{
+		*dy = -1;
+		*dx = -1;
+	}
+	if((*x_position > (paddle_position + 3)) && (*x_position <= paddle_position + 7) && (*y_position == 20))
+	{
+		*dy = -1;
+		*dx = 1;
+	}
+
+
+}
+
+
+void Check_Screen_Collisions(int8_t *dx, int8_t *dy, int8_t *x_position, int8_t *y_position)
 {
 	*x_position += *dx;
 	*y_position += *dy;
 
-	UART_print_int("\r\n x_position: %d", *x_position);
-	UART_print_int("\r\n dx: %d", *dx);
-
-	if((*x_position == 79) && (*dx > 0))
+	if((*x_position == 77) && (*dx > 0))
 	{
 		*dx = -1;
 	}
-	if((*x_position == 0) && (*dx < 0))
+	if((*x_position == 1) && (*dx < 0))
 	{
 		*dx = 1;
 	}
@@ -60,7 +87,7 @@ void Check_Collisions(int8_t *dx, int8_t *dy, int8_t *x_position, int8_t *y_posi
 
 void Print_Screen(int8_t *x_position, int8_t *y_position)
 {
-	for(uint32_t i = 0; i < 500000; i++) {}
+	for(uint32_t i = 0; i < 100000; i++) {}
 	UART_print("\033[2J\033[H");
 
 	for(uint8_t row = 0; row < VIEW_HEIGHT; row++)
@@ -68,13 +95,33 @@ void Print_Screen(int8_t *x_position, int8_t *y_position)
 
 		for(uint8_t col = 0; col < VIEW_WIDTH; col++)
 		{
+			if(row == 0 && col == 0)
+			{
+				UART_print("|-------------------------------------------------------------------------------");
+			}
+			if(col == 0)
+			{
+				UART_print("|");
+			}
+			if((col == (VIEW_WIDTH - 2)) && (row == *y_position)) //if row where ball is
+			{
+				UART_print("|");
+			}
+			else if(col == (VIEW_WIDTH - 1) && (row != *y_position) && (row != 21)) // if row where no ball is
+			{
+				UART_print("|");
+			}
+			else if((col == (VIEW_WIDTH - 3)) && (row == 21)) // if row where paddle is
+			{
+				UART_print("|");
+			}
 			if((row == *y_position) && (col == *x_position))	// for printing ball
 			{
 				UART_print("o");
 			}
-			if((row == 15) && (col == paddle_position))		// for printing paddle
+			if((row == 21) && (col == paddle_position))		// for printing paddle
 			{
-				UART_print("_____");
+				UART_print("_______");
 				col += 4;
 			}
 			else
@@ -89,10 +136,10 @@ void Print_Screen(int8_t *x_position, int8_t *y_position)
 
 void GAME_init(Ball *ball)
 {
-	ball->x = 5;
+	ball->x = BALL_X_START;
 	ball->y = BALL_Y_START;
-	ball->dx = -1;
-	ball->dy = -1;
+	ball->dx = 1;
+	ball->dy = 1;
 }
 
 
