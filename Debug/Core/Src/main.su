@@ -1,0 +1,12 @@
+../Drivers/CMSIS/Include/core_cm4.h:1679:22:__NVIC_EnableIRQ	16	static,ignoring_inline_asm
+../Core/Src/UART.h:22:6:UART_print_float	136	static
+../Core/Src/UART.h:30:6:UART_print_int	120	static
+../Core/Src/UART.h:37:6:UART_init	8	static
+../Core/Src/UART.h:59:6:UART_print	16	static
+../Core/Src/UART.h:69:6:USART2_IRQHandler	16	static
+../Core/Src/main.c:20:5:main	24	static
+../Core/Src/main.c:37:6:Check_Collisions	24	static
+../Core/Src/main.c:65:6:Print_Screen	32	static
+../Core/Src/main.c:94:6:GAME_init	16	static
+../Core/Src/main.c:139:6:SystemClock_Config	96	static
+../Core/Src/main.c:187:6:Error_Handler	4	static,ignoring_inline_asm
