@@ -7,14 +7,14 @@
 #define BALL_Y_START 10
 
 typedef struct {
-    uint8_t x, y;        // Position
-    uint8_t dx, dy;      // Velocity
+    int8_t x, y;        // Position
+    int8_t dx, dy;      // Velocity
 } Ball;
 
 void SystemClock_Config(void);
-void Print_Screen(uint8_t *x_position, uint8_t *y_position);
+void Print_Screen(int8_t *x_position, int8_t *y_position);
 void GAME_init(Ball *ball);
-void Check_Collisions(uint8_t *dx, uint8_t *dy, uint8_t *x_position, uint8_t *y_position);
+void Check_Collisions(int8_t *dx, int8_t *dy, int8_t *x_position, int8_t *y_position);
 
 
 int main(void)
@@ -34,16 +34,19 @@ int main(void)
 }
 
 
-void Check_Collisions(uint8_t *dx, uint8_t *dy, uint8_t *x_position, uint8_t *y_position)
+void Check_Collisions(int8_t *dx, int8_t *dy, int8_t *x_position, int8_t *y_position)
 {
 	*x_position += *dx;
 	*y_position += *dy;
+
+	UART_print_int("\r\n x_position: %d", *x_position);
+	UART_print_int("\r\n dx: %d", *dx);
 
 	if((*x_position == 79) && (*dx > 0))
 	{
 		*dx = -1;
 	}
-	if((*x_position < 3) && (*dx < 0))
+	if((*x_position == 0) && (*dx < 0))
 	{
 		*dx = 1;
 	}
@@ -55,7 +58,7 @@ void Check_Collisions(uint8_t *dx, uint8_t *dy, uint8_t *x_position, uint8_t *y_
 }
 
 
-void Print_Screen(uint8_t *x_position, uint8_t *y_position)
+void Print_Screen(int8_t *x_position, int8_t *y_position)
 {
 	for(uint32_t i = 0; i < 500000; i++) {}
 	UART_print("\033[2J\033[H");

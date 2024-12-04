@@ -14,7 +14,7 @@
 void UART_init(void);
 void USART2_IRQHandler(void);
 void UART_print(char *str);
-void UART_print_int(char *string, uint16_t value);
+void UART_print_int(char *string, int16_t value);
 void UART_print_float(char *string, float value);
 
 uint8_t paddle_position = 40;
@@ -27,7 +27,7 @@ void UART_print_float(char *string, float value) {
     UART_print(buffer);
 }
 
-void UART_print_int(char *string, uint16_t value)
+void UART_print_int(char *string, int16_t value)
 {
 	char stringify[100] = {0};
 	sprintf(stringify,string ,value); //take value and format it into char array
