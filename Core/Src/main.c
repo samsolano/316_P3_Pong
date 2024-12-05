@@ -12,6 +12,8 @@ typedef struct {
 } Ball;
 
 void SystemClock_Config(void);
+void RNG_init(void);
+uint32_t Get_Random_Number(void);
 void Print_Screen(int8_t *x_position, int8_t *y_position);
 void GAME_init(Ball *ball);
 void Check_Screen_Collisions(int8_t *dx, int8_t *dy, int8_t *x_position, int8_t *y_position);
@@ -23,12 +25,27 @@ int main(void)
 	HAL_Init();
 	SystemClock_Config();
 	UART_init();
+	RNG_init();
 
 	Ball ball;
 	GAME_init(&ball);
 
+
+
+
+
+	UART_print("\033[2J\033[H");
+
 	while (1)
 	{
+
+		UART_print_int("random: %d \r\n", (Get_Random_Number() && 0xff));
+		for(uint32_t i = 0; i < 100000; i++) {}
+
+
+
+		if(0)
+		{
 		Print_Screen(&(ball.x), &(ball.y));
 		Check_Screen_Collisions(&(ball.dx), &(ball.dy), &(ball.x), &(ball.y));
 		Check_Paddle_Collisions(&(ball.dx), &(ball.dy), &(ball.x), &(ball.y));
@@ -42,7 +59,25 @@ int main(void)
 			}
 			break;
 		}
+		}
 	}
+}
+
+uint32_t Get_Random_Number(void)
+{
+	while(!(RNG->SR && RNG_SR_DRDY))
+	if(RNG->DR != 0)
+	{
+		return RNG->DR;
+	}
+
+	return 69;
+}
+
+void RNG_init(void)
+{
+	RCC->AHB2ENR |= RCC_AHB2ENR_RNGEN;
+	RNG->CR |= RNG_CR_RNGEN;
 }
 
 
