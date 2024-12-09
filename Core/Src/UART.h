@@ -14,9 +14,10 @@
 void UART_init(void);
 void USART2_IRQHandler(void);
 void UART_print(char *str);
-void UART_print_int(char *string, int16_t value);
+void UART_print_int(char *string, int32_t value);
 void UART_print_float(char *string, float value);
 
+//initial position of paddle from left most character
 uint8_t paddle_position = 37;
 
 void UART_print_float(char *string, float value) {
@@ -27,7 +28,8 @@ void UART_print_float(char *string, float value) {
     UART_print(buffer);
 }
 
-void UART_print_int(char *string, int16_t value)
+//function to print a formatted string with an int to uart
+void UART_print_int(char *string, int32_t value)
 {
 	char stringify[100] = {0};
 	sprintf(stringify,string ,value); //take value and format it into char array
@@ -63,7 +65,6 @@ void UART_print(char *str)
 		while (!(USART2->ISR & USART_ISR_TXE)) {} //finish receiving
 		USART2->TDR = *str++; 				//write it out
 	}
-
 }
 
 void USART2_IRQHandler(void)
@@ -76,14 +77,14 @@ void USART2_IRQHandler(void)
 		//put input anded with the read register into a variable
 		sprintf(single,"%c", (char)(USART2->RDR & USART_RDR_RDR));
 
-		if(single[0] == 'a') //when s is pressed switch between DC and AC views
+		if(single[0] == 'a') //when a is pressed move paddle left by three
 		{
 			if(paddle_position >= 3)
 			{
 				paddle_position -= 3;
 			}
 		}
-		if(single[0] == 'd') //when s is pressed switch between DC and AC views
+		if(single[0] == 'd') //when d is pressed move paddle right by three
 		{
 			if(paddle_position <= 76)
 			{
@@ -92,8 +93,6 @@ void USART2_IRQHandler(void)
 		}
 		USART2->ISR &= ~(USART_ISR_RXNE);
 	}
-
 }
-
 
 #endif /* SRC_UART_H_ */
